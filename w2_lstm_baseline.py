@@ -45,7 +45,7 @@ except ModuleNotFoundError:
         f"    {BASE_DIR}/w2_lstm_baseline.py\n"
     )
 
-np.random.seed(42)
+np.random.seed(2)
 
 
 # =============================================================================
@@ -116,7 +116,7 @@ class EnhancedSMOTE:
     Fallback: x_new = x (copy) เมื่อมีตัวอย่าง太少
     """
 
-    def __init__(self, k_neighbors: int = 3, random_state: int = 42):
+    def __init__(self, k_neighbors: int = 3, random_state: int = 64):
         self.k = k_neighbors
         self.rng = np.random.RandomState(random_state)
 
@@ -230,7 +230,7 @@ class LSTMClassifier:
         - Uncertainty estimation (entropy)
     """
 
-    def __init__(self, input_size: int, hidden_size: int = 32,
+    def __init__(self, input_size: int, hidden_size: int = 64,
                  n_classes: int = 3, seed: int = 42,
                  fn_weight: float = 2.0, fp_weight: float = 1.0):
         rng = np.random.RandomState(seed)
@@ -321,7 +321,7 @@ class BiLSTMClassifier:
     [v4-4] Uncertainty estimation (entropy)
     """
 
-    def __init__(self, input_size: int, hidden_size: int = 32,
+    def __init__(self, input_size: int, hidden_size: int = 64,
                  n_classes: int = 3, seed: int = 42,
                  fn_weight: float = 2.0, fp_weight: float = 1.0):
         rng = np.random.RandomState(seed)
@@ -845,7 +845,7 @@ def run_workshop():
 
     print_section("STEP 3: Split → SMOTE (train only)")
 
-    rng = np.random.RandomState(2)    
+    rng = np.random.RandomState(24)    
     tr_idx, te_idx = [], []
     for cls in range(len(CLASS_NAMES)):
         idx = np.where(y_aug == cls)[0].copy()
@@ -987,15 +987,15 @@ def run_workshop():
   │  W1Pipeline.transform()                                     │
   │  ├─ ThaiLegalTokenizer   (compound-aware, 24 compounds)     │
   │  ├─ LegalTFIDF           (IDF + L2 norm + [UNK])            │
-  │  └─ ThaiIPEntityExtractor (context-aware confidence)       │
+  │  └─ ThaiIPEntityExtractor (context-aware confidence)        │
   └─────────────────────────┬───────────────────────────────────┘
                             │  float32 (n, 16)
         ▼  w2_lstm_baseline_w1.py (v4)
   ┌─────────────────────────────────────────────────────────────┐
   │  Data Augmentation (Synonym Replacement)                    │
   │  EnhancedSMOTE (with Random Oversampling fallback)          │
-  │  BiLSTMClassifier (Xavier init, mean pooling, bf=1)        │
-  │  Cost-Sensitive Loss (FN weight=2.0, FP weight=1.0)        │
+  │  BiLSTMClassifier (Xavier init, mean pooling, bf=1)         │
+  │  Cost-Sensitive Loss (FN weight=2.0, FP weight=1.0)         │
   │  Uncertainty Estimation (Entropy for Physics Gate)          │
   └─────────────────────────┬───────────────────────────────────┘
                             │  class probabilities (3,) + entropy
@@ -1004,8 +1004,8 @@ def run_workshop():
         │
         ▼  For W17 (Physics Gate)
   ┌─────────────────────────────────────────────────────────────┐
-  │  If entropy > 0.8: Request IoT sensor verification         │
-  │  Physics Gate Weight = severity × confidence × adjustment  │
+  │  If entropy > 0.8: Request IoT sensor verification          │
+  │  Physics Gate Weight = severity × confidence × adjustment   │
   └─────────────────────────────────────────────────────────────┘
 
   v4 Enhancements:
